@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import "reflect-metadata";
 import bodyParser from "body-parser";
 import cors from "cors";
 import router from "./router";
@@ -11,23 +12,20 @@ app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("<h1>Hello worl222d</h1>");
+  res.send("<h3>Hello world</h3>");
 });
 
 app.use("/api", router);
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World!");
-});
-
 const PORT: number = parseInt(process.env.PORT as string, 10) || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
-  try {
-    postgresClient;
-    console.log("Connected to database.");
-  } catch (error) {
-    console.log(error);
-  }
-});
+postgresClient
+  .initialize()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+    console.log("Connected to PostgreSQL database.");
+  })
+  .catch((error) => {
+    console.error(error);
+  });
